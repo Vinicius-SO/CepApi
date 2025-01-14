@@ -3,7 +3,6 @@ package services;
 import com.google.gson.Gson;
 import models.Address;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -19,14 +18,11 @@ public class CepApiService {
                 .newBuilder()
                 .uri(URI.create(httpURI))
                 .build();
-        HttpResponse<String> response = null;
         try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return new Gson().fromJson(response.body(), Address.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Não foi possível obter o endereço a partir do cep informado");
         }
-        return new Gson().fromJson(response.body(), Address.class);
     }
 }
